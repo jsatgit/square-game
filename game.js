@@ -1,114 +1,225 @@
-const blue = "#00bfff";
-const red = "#ff4000";
+const BLUE_COLOUR = "#00bfff";
+const RED_COLOUR = "#ff4000";
+const WHITE_COLOUR = "#ffffff";
 
-const board = [];
-
-const EMPTY = 0;
-const RED = 1;
-const BLUE = 2;
-
-const squares = {
-  [BLUE]: [{x:0, y:0}],
-  [RED]: [{x:99, y:99}]
+function maxPlayer(dict) {
+  let max = {value: 0, player: null};
+  for (key in dict) {
+    const item = dict[key];
+    max = item.value > max.value ? item : max;
+  }
+  return max.player;
 }
-
-const WIDTH = 100;
-const HEIGHT = 100;
-
-const SQUARE_SIZE = 5;
 
 function runEvery(func, ms) {
   func();
   setTimeout(() => runEvery(func, ms), ms);
 }
 
-function main() {
-  const stage = new createjs.Stage("canvas");
-  initBoard();
-  runEvery(() => tick(stage), 40);
+function serializePosition(position) {
+  return `${position.x}.${position.y}`;
 }
 
-function initBoard() {
-  let i, j;
-  for (i = 0; i < HEIGHT; ++i) {
-    board.push([]);
-    for (j = 0; j < WIDTH; ++j) {
-      board[i].push(EMPTY);
+class Game {
+  constructor(config) {
+    this.width = config.width;
+    this.height = config.height;
+    this.squareSize = config.squareSize;
+    this.players = config.players;
+    this.tickSize = 40
+    this.stage = new createjs.Stage("canvas");
+    this.board = null;
+    this.initBoard();
+    this.initPlayers();
+  }
+
+  initPlayers() {
+    this.players.forEach(player => {
+      player.game = this;
+    });
+  }
+
+  initBoard() {
+    this.board = []
+    let i, j;
+    for (i = 0; i < this.height; ++i) {
+      this.board.push([]);
+      for (j = 0; j < this.width; ++j) {
+        this.board[i].push(null);
+      }
     }
   }
-}
 
-function boardGet(pos) {
-  return board[pos.y][pos.x];
-}
+  drawRect(x, y, color) {
+    const square = new createjs.Shape();
+    square.graphics
+      .beginFill(color)
+      .drawRect(x, y, this.squareSize, this.squareSize);
+    this.stage.addChild(square);
+  }
 
-function boardSet(pos, side) {
-  board[pos.y][pos.x] = side;
-}
+  combineAttacks(attacks) {
+    const combinedAttacks = {};
+    attacks.forEach(playerAttacks => {
+      const player = playerAttacks.player;
+      playerAttacks.attacks.forEach(attack => {
+        const key = serializePosition(attack);
+        if (!(key in combinedAttacks)) {
+          combinedAttacks[key] = {
+            position: attack,
+            attacks: {}
+          } 
+        }
+        const declarations = combinedAttacks[key].attacks;
+        if (!declarations[player.id]) {
+          declarations[player.id] = {
+            player,
+            value: 0
+          };
+        }
+        declarations[player.id].value += 1;
+      });
+    });
 
-function withinBounds(pos) {
-  return pos.x >= 0 && pos.x < WIDTH && pos.y >= 0 && pos.y < HEIGHT;
-}
+    for (let key in combinedAttacks) {
+      const square = combinedAttacks[key];
+      const player = maxPlayer(square.attacks);
+      square.winner = player;
+    }
 
-function isUnoccupied(pos) {
-  return boardGet(pos) === EMPTY;
-}
+    return combinedAttacks;
+  }
 
-function posToCoord(pos) {
-  return {
-    x: pos.x * SQUARE_SIZE,
-    y: pos.y * SQUARE_SIZE,
-  }  
-}
+  render(combinedAttacks) {
+    Object.values(combinedAttacks).forEach(square => {
+      const cord = this.posToCoord(square.position);
+      this.drawRect(cord.x, cord.y, square.winner.colour);
+    });
+    this.stage.update();
+  }
 
-function shouldExpand(newSquare) {
-  return Math.random() < 0.5;
-}
+  posToCoord(pos) {
+    return {
+      x: pos.x * this.squareSize,
+      y: pos.y * this.squareSize,
+    }  
+  }
 
-function updateSquares(side) {
-  const newSquares = [];
-  squares[side].forEach(square => {
-    let hasFreeNeighbours = false;
+  tick() {
+    const attacks = this.players.map(player => ({
+      player,
+      attacks: player.getAttacks()
+    }));
+    const combinedAttacks = this.combineAttacks(attacks);
+    this.updateBoard(combinedAttacks);
+    this.render(combinedAttacks);
+  }
+
+  updateBoard(combinedAttacks) {
+    for (let key in combinedAttacks) {
+      const square = combinedAttacks[key];
+      this.setPlayer(square.position, square.winner);
+      square.winner.positions.push(square.position);
+    }
+  }
+
+  withinBounds(pos) {
+    return pos.x >= 0 && pos.x < this.width && pos.y >= 0 && pos.y < this.height;
+  }
+
+  getPlayer(pos) {
+    return this.board[pos.y][pos.x];
+  }
+
+  setPlayer(pos, player) {
+    this.board[pos.y][pos.x] = player;
+  }
+
+  isFree(pos, player) {
+    return this.getPlayer(pos) !== player;
+  }
+
+  getFreeNeighbours(pos, player) {
+    const freeNeighbours = []
     let i,j;
     for (i = -1; i < 2; ++i) {
       for (j = -1; j < 2; ++j) {
-        const newSquare = {
-          x: square.x + i,
-          y: square.y + j
+        const neighbour = {
+          x: pos.x + i,
+          y: pos.y + j
         };
-        if (!(i === 0 && j === 0) && withinBounds(newSquare) && isUnoccupied(newSquare)) {
-          if (shouldExpand(newSquare)) {
-            newSquares.push(newSquare);
-            boardSet(newSquare, side);
-          }
-          hasFreeNeighbours = true;
+        if (!(i === 0 && j === 0) && 
+          this.withinBounds(neighbour) && 
+          this.isFree(neighbour, player)
+        ) {
+          freeNeighbours.push(neighbour);
         }
       }
     }
-    if (hasFreeNeighbours) {
-      newSquares.push(square);
-    }
+    return freeNeighbours;
+  }
+
+  start() {
+    runEvery(() => this.tick(), this.tickSize);
+  }
+}
+
+function selectRandom(array) {
+  if (array.length === 0) {
+    return null;
+  }
+
+  const i = Math.floor(Math.random() * array.length);
+  return array[i];
+}
+
+let id = 0;
+
+function generateId() {
+  const tmp = id;
+  id += 1;
+  return tmp;
+}
+
+class Player {
+  constructor(config) {
+    this.colour = config.colour;
+    this.positions = [config.startingPosition];
+    this.game = null;
+    this.id = generateId();
+  }
+
+  getAttacks() {
+    const attacks = []
+    this.positions.forEach(position => {
+      const freeNeighbours = this.game.getFreeNeighbours(position, this);
+      const randomNeighbour = selectRandom(freeNeighbours);
+      if (randomNeighbour !== null) {
+        attacks.push(randomNeighbour);
+      }
+    });
+    return attacks;
+  }
+}
+
+function main() {
+  const player1 = new Player({
+    colour: BLUE_COLOUR,
+    startingPosition: {x:0, y:0},
+  })
+
+  const player2 = new Player({
+    colour: RED_COLOUR,
+    startingPosition: {x:99, y:99},
+  })
+
+  const game = new Game({
+    width: 100,
+    height: 100,
+    squareSize: 5,
+    players: [player1, player2],
   });
-  squares[side] = newSquares;
+
+  game.start();
 }
 
-function renderSquares(stage, side, color) {
-  squares[side].forEach(square => {
-    const cord = posToCoord(square);
-    drawRect(stage, cord.x, cord.y, color);
-  });
-}
-
-function tick(stage) {
-  updateSquares(BLUE);
-  updateSquares(RED);
-  renderSquares(stage, BLUE, blue);
-  renderSquares(stage, RED, red);
-  stage.update();
-}
-
-function drawRect(stage, x, y, color) {
-  const square = new createjs.Shape();
-  square.graphics.beginFill(color).drawRect(x, y, SQUARE_SIZE, SQUARE_SIZE);
-  stage.addChild(square);
-}
