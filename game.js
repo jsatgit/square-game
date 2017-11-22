@@ -118,8 +118,13 @@ class Game {
   updateBoard(combinedAttacks) {
     for (let key in combinedAttacks) {
       const square = combinedAttacks[key];
+      const posKey = serializePosition(square.position);
+      const previousPlayer = this.getPlayer(square.position);
+      if (previousPlayer) {
+        delete previousPlayer.positions[posKey];
+      }
       this.setPlayer(square.position, square.winner);
-      square.winner.positions.push(square.position);
+      square.winner.positions[posKey] = square.position;
     }
   }
 
@@ -184,14 +189,21 @@ function generateId() {
 class Player {
   constructor(config) {
     this.colour = config.colour;
-    this.positions = [config.startingPosition];
+    this.positions = {};
     this.game = null;
     this.id = generateId();
+
+    this.initPositions(config.startingPosition);
+  }
+
+  initPositions(startingPosition) {
+    const key = serializePosition(startingPosition);
+    this.positions[key] = startingPosition;
   }
 
   getAttacks() {
-    const attacks = []
-    this.positions.forEach(position => {
+    const attacks = [];
+    Object.values(this.positions).forEach(position => {
       const freeNeighbours = this.game.getFreeNeighbours(position, this);
       const randomNeighbour = selectRandom(freeNeighbours);
       if (randomNeighbour !== null) {
