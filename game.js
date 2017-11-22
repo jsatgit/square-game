@@ -120,11 +120,15 @@ class Game {
       const square = combinedAttacks[key];
       const posKey = serializePosition(square.position);
       const previousPlayer = this.getPlayer(square.position);
-      if (previousPlayer) {
-        delete previousPlayer.positions[posKey];
+      if (previousPlayer === square.winner) {
+        delete combinedAttacks[key];
+      } else {
+        if (previousPlayer) {
+          delete previousPlayer.positions[posKey];
+        }
+        this.setPlayer(square.position, square.winner);
+        square.winner.positions[posKey] = square.position;
       }
-      this.setPlayer(square.position, square.winner);
-      square.winner.positions[posKey] = square.position;
     }
   }
 
@@ -153,10 +157,7 @@ class Game {
           x: pos.x + i,
           y: pos.y + j
         };
-        if (!(i === 0 && j === 0) && 
-          this.withinBounds(neighbour) && 
-          this.isFree(neighbour, player)
-        ) {
+        if (this.withinBounds(neighbour)) {
           freeNeighbours.push(neighbour);
         }
       }
