@@ -2,6 +2,8 @@ const BLUE_COLOUR = "#00bfff";
 const RED_COLOUR = "#ff4000";
 const WHITE_COLOUR = "#ffffff";
 
+game = null;
+
 function maxPlayer(dict) {
   let max = {value: 0, player: null};
   for (key in dict) {
@@ -9,11 +11,6 @@ function maxPlayer(dict) {
     max = item.value > max.value ? item : max;
   }
   return max.player;
-}
-
-function runEvery(func, ms) {
-  func();
-  setTimeout(() => runEvery(func, ms), ms);
 }
 
 function serializePosition(position) {
@@ -26,7 +23,9 @@ class Game {
     this.height = config.height;
     this.squareSize = config.squareSize;
     this.players = config.players;
-    this.tickSize = 40
+    this.tickSize = 40;
+    this.hasTicker = false;
+    this.generations = 0;
     this.stage = new createjs.Stage("canvas");
     this.board = null;
     this.initBoard();
@@ -113,6 +112,7 @@ class Game {
     const combinedAttacks = this.combineAttacks(attacks);
     this.updateBoard(combinedAttacks);
     this.render(combinedAttacks);
+    this.generations++;
   }
 
   updateBoard(combinedAttacks) {
@@ -165,9 +165,13 @@ class Game {
     return freeNeighbours;
   }
 
-  start() {
-    runEvery(() => this.tick(), this.tickSize);
+  restart() {
+    
+      this.stage.removeAllChildren();
+      this.stage.update();
+
   }
+
 }
 
 function selectRandom(array) {
@@ -226,13 +230,11 @@ function main() {
     startingPosition: {x:99, y:99},
   })
 
-  const game = new Game({
+  game = new Game({
     width: 100,
     height: 100,
     squareSize: 5,
     players: [player1, player2],
   });
-
-  game.start();
 }
 
