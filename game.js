@@ -229,19 +229,19 @@ class Player {
 function main() {
   const player1 = new Player({
     colour: BLUE_COLOUR,
-    startingPosition: {x:0, y:0},
+    startingPosition: {x:99, y:99},
   })
 
   const player2 = new Player({
     colour: RED_COLOUR,
-    startingPosition: {x:99, y:99},
+    startingPosition: {x:0, y:0},
   })
 
   game = new Game({
     width: 100,
     height: 100,
     squareSize: 5,
-    players: [player1, player2],
+    players: [player2, player1],
   });
 }
 

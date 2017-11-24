@@ -29,14 +29,24 @@ function onStop() {
     updateGenerations();
 }
 
+function onStep() {
+
+    update();
+
+}
+
 function handleEvent() {
 
-    if(!createjs.Ticker.getPaused()) {
-        
-        this.game.tick();
-        updateGenerations();
-        
+    if(!createjs.Ticker.getPaused()) {        
+        update();
     }
+}
+
+function update() {
+    
+    this.game.tick();
+    updateGenerations();
+
 }
 
 function updatePlayPauseIcon(paused) {
