@@ -168,7 +168,14 @@ class Game {
   restart() {
     
       this.stage.removeAllChildren();
+      this.initBoard();
+      this.players.forEach(player => {
+        player.positions = {};
+        player.initPositions(player.startingPosition);
+      });
+      this.generations = 0;
       this.stage.update();
+
 
   }
 
@@ -197,8 +204,8 @@ class Player {
     this.positions = {};
     this.game = null;
     this.id = generateId();
-
-    this.initPositions(config.startingPosition);
+    this.startingPosition = config.startingPosition;
+    this.initPositions(this.startingPosition);
   }
 
   initPositions(startingPosition) {

@@ -26,6 +26,7 @@ function onStop() {
     createjs.Ticker.paused = true;
     updatePlayPauseIcon(true);
     this.game.restart();
+    updateGenerations();
 }
 
 function handleEvent() {
