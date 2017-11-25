@@ -3,8 +3,8 @@
 <head>
 	<title>Square Game</title>
 	<script src="./easeljs-0.8.2.min.js"></script>
-	<script src="./game.js"></script>
-    <script src="./ui.js"></script>
+	<script src="./ui.js"></script>
+    <script src="./game.js"></script>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
@@ -14,16 +14,16 @@
       Square Game
     </h1> 
   </header>
-  <canvas id="canvas" width="500" height="500"></canvas>
-  <table>
+  <canvas id="canvas"></canvas>
+  <table id="table-stats">
     <tr>
-    <td><button onclick="onStop();">
+    <td><button id="stopBtn">
         <i class="material-icons">stop</i>
     </button></td>
-    <td><button onclick="onPlayPause();">
-        <i id="playpause" class="material-icons">play_arrow</i>
+    <td><button id="playPauseBtn">
+        <i class="material-icons">play_arrow</i>
     </button></td>
-    <td><button onclick="onStep();">
+    <td><button id="stepBtn">
         Step
     </button></td>
     <td class="text">
@@ -32,8 +32,12 @@
     <td id="gen-value" class="text">
         0
     </td>
+    <td id="mouse-pos" align="right" class="text" width="99%">
+        (0,0)
+    </td>
     </tr>
   </table>
+
 </body>
 
 </html>

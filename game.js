@@ -2,7 +2,10 @@ const BLUE_COLOUR = "#00bfff";
 const RED_COLOUR = "#ff4000";
 const WHITE_COLOUR = "#ffffff";
 
-game = null;
+const GAME_WIDTH = 100;
+const GAME_HEIGHT = 100;
+const SQUARE_SIZE = 5;
+
 
 function maxPlayer(dict) {
   let max = {value: 0, player: null};
@@ -39,6 +42,7 @@ class Game {
   }
 
   initBoard() {
+
     this.board = []
     let i, j;
     for (i = 0; i < this.height; ++i) {
@@ -227,6 +231,13 @@ class Player {
 }
 
 function main() {
+  
+  const canvas = document.getElementById("canvas");
+  const tableStats = document.getElementById("table-stats");
+  canvas.height = GAME_HEIGHT * SQUARE_SIZE;
+  canvas.width = GAME_WIDTH * SQUARE_SIZE;
+  tableStats.width = GAME_WIDTH * SQUARE_SIZE;
+   
   const player1 = new Player({
     colour: BLUE_COLOUR,
     startingPosition: {x:99, y:99},
@@ -237,11 +248,21 @@ function main() {
     startingPosition: {x:0, y:0},
   })
 
-  game = new Game({
-    width: 100,
-    height: 100,
-    squareSize: 5,
+  const game = new Game({
+    width: GAME_WIDTH,
+    height: GAME_HEIGHT,
+    squareSize: SQUARE_SIZE,
     players: [player2, player1],
   });
+
+  const ui = new UI({
+    game: game,
+    playPauseBtn: document.getElementById("playPauseBtn"),
+    stepBtn: document.getElementById("stepBtn"),
+    stopBtn: document.getElementById("stopBtn"),
+    generationCounter: document.getElementById("gen-value"),
+    mousePosition: document.getElementById("mouse-pos")
+  });
+
 }
 
