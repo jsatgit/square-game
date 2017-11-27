@@ -193,7 +193,7 @@ class View {
   }
 
   _adjustIntensity(colour, intensity) {
-    const a = Math.min(100, intensity / 100);
+    const a = Math.min(1, intensity / 100);
     return new Colour(colour.r, colour.g, colour.b, a);
   }
 
