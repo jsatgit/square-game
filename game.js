@@ -295,9 +295,17 @@ class Game {
     }
   }
 
+  _runForever() {
+    if (this.isRunning) {
+      this.tick();
+      setTimeout(this._runForever.bind(this), this.tickSize);
+    }
+  }
+
   reset() {
     this.view = new View(this.squareSize);
     this.board = new Board(this.width, this.height);
+    this.isRunning = true;
 
     this._addArmiesToBoard();
   }
@@ -311,15 +319,14 @@ class Game {
     this.render();
   }
 
-  start() {
-    this.render();
-    runEvery(() => this.tick(), this.tickSize);
+  pause() {
+    this.isRunning = false;
   }
-}
 
-function runEvery(func, ms) {
-  func();
-  setTimeout(() => runEvery(func, ms), ms);
+  start() {
+    this.isRunning = true;
+    this._runForever();
+  }
 }
 
 function main() {
