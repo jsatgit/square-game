@@ -1,21 +1,20 @@
 class HashMap {
-	constructor() {
-	  this.map = {};
-	}
-	
-	has(key) {
-	  return key in this.map;
-	}
-	
-	get(key) {
-	  return this.map[key];
-	}
-	
-	set(key, value) {
-	  this.map[key] = value;
-	}
-}
+  constructor() {
+    this.map = {};
+  }
 
+  has(key) {
+    return key in this.map;
+  }
+
+  get(key) {
+    return this.map[key];
+  }
+
+  set(key, value) {
+    this.map[key] = value;
+  }
+}
 
 Array.prototype.randomElement = function() {
   if (this.length === 0) {
