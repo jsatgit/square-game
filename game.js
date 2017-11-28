@@ -46,11 +46,11 @@ class Position {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-	this.serialized = `${x},${y}`;
+    this.serialized = `${x},${y}`;
   }
-  
+
   toString() {
-	return this.serialized;
+    return this.serialized;
   }
 }
 
@@ -138,9 +138,9 @@ class Cell {
       target.cell.targeters.add(army);
     }
   }
-  
+
   get id() {
-	return this.position.toString();  
+    return this.position.toString();
   }
 }
 
@@ -183,7 +183,7 @@ class Board {
       }
     }
   }
-  
+
   *[Symbol.iterator]() {
     for (let i = 0; i < this.cells.length; ++i) {
       for (let j = 0; j < this.cells[i].length; ++j) {
@@ -225,8 +225,8 @@ class View {
   }
 
   _getColour(cell) {
-    const colour = cell.army ? 
-      this._adjustIntensity(cell.army.player.colour, cell.army.size) : 
+    const colour = cell.army ?
+      this._adjustIntensity(cell.army.player.colour, cell.army.size) :
       WHITE_COLOUR;
     return colour.toString();
   }
@@ -234,7 +234,7 @@ class View {
   _hasCellChanged(cell, newColour) {
     return !this.previousRender.has(cell.id) || this.previousRender.get(cell.id) !== newColour;
   }
-  
+
   render(board) {
     for (let cell of board) {
       const colour = this._getColour(cell);
@@ -242,9 +242,32 @@ class View {
         this.previousRender.set(cell.id, colour);
         const {x, y} = this._modelToViewCoord(cell.position);
         this._drawRect(x, y, colour);
-      } 
+      }
     }
     this.stage.update();
+  }
+}
+
+const Events = {
+  NEW_GENERATION: Symbol('new-generation'),
+};
+
+class EventListeners {
+  constructor() {
+    this.eventListeners = {};
+  }
+
+  register(eventName, callback) {
+    if (!(eventName in this.eventListeners)) {
+      this.eventListeners[eventName] = [];
+    }
+    this.eventListeners[eventName].push(callback);
+  }
+
+  dispatch(eventName, ...args) {
+    if (eventName in this.eventListeners) {
+      this.eventListeners[eventName].forEach(callback => callback(...args));
+    }
   }
 }
 
@@ -255,7 +278,9 @@ class Game {
     this.height = config.height;
     this.players = config.players;
     this.tickSize = 40;
-  
+    this.generation = 0;
+    this.eventListeners = new EventListeners();
+
     this.reset();
   }
 
@@ -314,9 +339,18 @@ class Game {
     this.view.render(this.board);
   }
 
+  incrementGeneration() {
+    this.eventListeners.dispatch(Events.NEW_GENERATION, ++this.generation);
+  }
+
+  addEventListener(eventName, callback) {
+    this.eventListeners.register(eventName, callback);
+  }
+
   tick() {
     this._update();
     this.render();
+    this.incrementGeneration();
   }
 
   pause() {
