@@ -122,7 +122,7 @@ class Cell {
     this.targeters = new Targeters();
   }
 
-  _vacateArmy(size) {
+  vacateArmy(size) {
     this.army.size -= size;
     if (this.army.size <= 0) {
       this.army = null;
@@ -132,11 +132,11 @@ class Cell {
   dispatchArmy(target) {
     const availableArmySize = Math.min(target.armySize, this.army.size);
     if (availableArmySize > 0) {
-      this._vacateArmy(availableArmySize);
       // TODO copy constructor
       const army = new Army(availableArmySize, this.army.player);
       target.cell.targeters.add(army);
     }
+    return availableArmySize;
   }
 
   get id() {
@@ -280,6 +280,7 @@ class Game {
     this.tickSize = 40;
     this.generation = 0;
     this.eventListeners = new EventListeners();
+    this.armiesToVacate = [];
 
     this.reset();
   }
@@ -293,9 +294,8 @@ class Game {
 
   _setTargets(cell) {
     const targets = cell.army.player.strategy.getTargets(cell);
-    targets.forEach(target => {
-      cell.dispatchArmy(target);
-    });
+    return targets.reduce((armySizeToVacate, target) => 
+      armySizeToVacate + cell.dispatchArmy(target), 0);
   }
 
   _resolveTargets(cell) {
@@ -307,11 +307,17 @@ class Game {
   }
 
   _update() {
+    const armiesToVacate = [];
     for (let cell of this.board) {
       if (cell.army) {
-        this._setTargets(cell);
+        const armySizeToVacate = this._setTargets(cell);
+        armiesToVacate.push({cell, armySizeToVacate});
       }
     }
+
+    armiesToVacate.forEach(({cell, armySizeToVacate}) => 
+      cell.vacateArmy(armySizeToVacate)
+    );
 
     for (let cell of this.board) {
       if (cell.targeters.hasTargeters()) {
