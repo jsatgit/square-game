@@ -1,3 +1,22 @@
+class HashMap {
+	constructor() {
+	  this.map = {};
+	}
+	
+	has(key) {
+	  return key in this.map;
+	}
+	
+	get(key) {
+	  return this.map[key];
+	}
+	
+	set(key, value) {
+	  this.map[key] = value;
+	}
+}
+
+
 Array.prototype.randomElement = function() {
   if (this.length === 0) {
     return null;
@@ -28,6 +47,11 @@ class Position {
   constructor(x, y) {
     this.x = x;
     this.y = y;
+	this.serialized = `${x},${y}`;
+  }
+  
+  toString() {
+	return this.serialized;
   }
 }
 
@@ -43,7 +67,7 @@ class Player {
   constructor(config) {
     this.colour = config.colour;
     this.startingPosition = config.startingPosition;
-    this.armySize = 1000;
+    this.armySize = 1000000;
     this.strategy = new Strategy();
   }
 }
@@ -115,6 +139,10 @@ class Cell {
       target.cell.targeters.add(army);
     }
   }
+  
+  get id() {
+	return this.position.toString();  
+  }
 }
 
 class Board {
@@ -173,7 +201,7 @@ class Board {
 class View {
   constructor(squareSize) {
     this.stage = new createjs.Stage('canvas');
-    this.previousRender = new Map();
+    this.previousRender = new HashMap();
     this.squareSize = squareSize;
   }
 
@@ -205,14 +233,14 @@ class View {
   }
 
   _hasCellChanged(cell, newColour) {
-    return !this.previousRender.has(cell) || this.previousRender.get(cell) !== newColour;
+    return !this.previousRender.has(cell.id) || this.previousRender.get(cell.id) !== newColour;
   }
   
   render(board) {
     for (let cell of board) {
       const colour = this._getColour(cell);
       if (this._hasCellChanged(cell, colour)) {
-        this.previousRender.set(cell, colour);
+        this.previousRender.set(cell.id, colour);
         const {x, y} = this._modelToViewCoord(cell.position);
         this._drawRect(x, y, colour);
       } 
