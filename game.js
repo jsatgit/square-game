@@ -280,7 +280,6 @@ class Game {
     this.tickSize = 40;
     this.generation = 0;
     this.eventListeners = new EventListeners();
-    this.armiesToVacate = [];
 
     this.reset();
   }
