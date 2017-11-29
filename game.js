@@ -11,6 +11,11 @@ class HashMap {
     return this.map[key];
   }
 
+  set(key, value) {
+    this.map[key] = value;
+  }
+}
+
 Array.prototype.randomElement = function() {
   if (this.length === 0) {
     return null;
@@ -275,7 +280,7 @@ class Game {
     this.tickSize = 40;
     this.generation = 0;
     this.eventListeners = new EventListeners();
-
+    this.isRunning = false;
     this.reset();
   }
 
@@ -330,9 +335,11 @@ class Game {
   reset() {
     this.view = new View(this.squareSize);
     this.board = new Board(this.width, this.height);
-    this.isRunning = true;
-
+    this.isRunning = false;
+    this.generation = 0;
     this._addArmiesToBoard();
+    this.render();
+    this.eventListeners.dispatch(Events.NEW_GENERATION, this.generation);
   }
 
   render() {
@@ -364,12 +371,10 @@ class Game {
 }
 
 function main() {
-  
-  const canvas = document.getElementById("canvas");
-  const tableStats = document.getElementById("table-stats");
-  canvas.height = GAME_HEIGHT * SQUARE_SIZE;
-  canvas.width = GAME_WIDTH * SQUARE_SIZE;
-  tableStats.width = GAME_WIDTH * SQUARE_SIZE;
+
+  const WIDTH = 25;
+  const HEIGHT = 25;
+  const SQUARE_SIZE = 20;
    
   const player1 = new Player({
     colour: BLUE_COLOUR,
@@ -382,10 +387,22 @@ function main() {
   });
 
   const game = new Game({
-    width: 25,
-    height: 25,
-    squareSize: 20,
+    width: WIDTH,
+    height: HEIGHT,
+    squareSize: SQUARE_SIZE,
     players: [player1, player2],
   });
 
+  const table = document.getElementById("table-stats");
+  table.width = WIDTH*SQUARE_SIZE;
+  table.height = HEIGHT*SQUARE_SIZE;
+
+  const ui = new UI({
+    game: game,
+    playButton: document.getElementById("play-button"),
+    stopButton: document.getElementById("stop-button"),
+    stepButton: document.getElementById("step-button"),
+    generationCounter: document.getElementById("generation-counter"),
+    events: Events,
+  });
 }
