@@ -9,4 +9,3 @@ export default class Position {
     return this.serialized;
   }
 }
-

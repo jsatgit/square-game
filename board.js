@@ -53,4 +53,3 @@ export default class Board {
     this.cells[position.y][position.x].army = army;
   }
 }
-

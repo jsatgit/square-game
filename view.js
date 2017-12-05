@@ -51,4 +51,3 @@ export default class View {
     this.stage.update();
   }
 }
-
