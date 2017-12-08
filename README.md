@@ -1,3 +1,19 @@
+# Prerequisites
+
+[Yarn](https://yarnpkg.com/en/)
+
+# Install
+
+```
+yarn
+```
+
+# Run
+
+```
+yarn start
+```
+
 # Classes
 
 ## Colour
