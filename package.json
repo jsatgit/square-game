@@ -5,11 +5,15 @@
   "repository": "https://github.com/jsatgit/square-game.git",
   "author": "James Shi <jshi@live.ca>",
   "license": "MIT",
+  "scripts": {
+    "start" : "ws"
+  },
   "devDependencies": {
     "eslint": "^4.12.0",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
-    "eslint-plugin-react": "^7.5.1"
+    "eslint-plugin-react": "^7.5.1",
+    "local-web-server": "^2.3.0"
   }
 }
