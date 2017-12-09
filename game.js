@@ -11,9 +11,8 @@ export default class Game {
     this.height = config.height;
     this.players = config.players;
     this.tickSize = 40;
-    this.generation = 0;
     this.eventListeners = new EventListeners();
-    this.isRunning = false;
+    
     this.reset();
   }
 
@@ -71,8 +70,6 @@ export default class Game {
     this.isRunning = false;
     this.generation = 0;
     this._addArmiesToBoard();
-    this.render();
-    this.eventListeners.dispatch(Events.NEW_GENERATION, this.generation);
   }
 
   render() {

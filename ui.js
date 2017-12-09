@@ -1,40 +1,58 @@
+import Events from './events.js';
 
 const PLAY_ICON = "play_arrow";
 const PAUSE_ICON = "pause";
 
-class UI {
-  constructor(config) {
-    this.game = config.game;
-    this.playButton = config.playButton;
-    this.stepButton = config.stepButton;
-    this.stopButton = config.stopButton;
-    this.generationCounter = config.generationCounter;
-    this.events = config.events;
-    //this.mousePosition = config.mousePosition;
+export default class UI { 
+  constructor(game) {
+    this.game = game;
+    this.playButton = this._getElement("play-button");
+    this.pauseButton = this._getElement("pause-button"); 
+    this.stepButton = this._getElement("step-button");
+    this.stopButton = this._getElement("stop-button");
+    this.generationCounter = this._getElement("generation-counter");
     this.initUI();
   }
 
   initUI() {
-    this.playIcon = this.playButton.firstElementChild;
-    this.stopButton.onclick = () => {
-      this.game.reset();
-    };
-    this.playButton.onclick = () => {
-      if (this.game.isRunning) {
-        this.game.pause();
-        this.playIcon.innerHTML = PLAY_ICON;
-      } else {
-        this.game.start();
-        this.playIcon.innerHTML = PAUSE_ICON;
-      }
-    };
-    this.stepButton.onclick = () => {
-      this.playIcon.innerHTML = PLAY_ICON;
+    this.playButton.addEventListener("click", () => {
       this.game.start();
-      this.game.pause();
-    };
-    this.game.addEventListener(this.events.NEW_GENERATION, () => {
+    });
+
+    this.pauseButton.addEventListener("click", () => {
+      this._pause();
+    });
+
+    this.stepButton.addEventListener("click", () => {
+      this._pause();
+      this.game.tick();
+    });
+
+    this.stopButton.addEventListener("click", () => {
+      this.game.reset();
+      this._setGeneration(this.game.generation);
+    });
+    
+    this.game.addEventListener(Events.NEW_GENERATION, () => {
       this.generationCounter.innerHTML = this.game.generation;
     });
+  }
+
+  _getElement(elementId) {
+    return document.getElementById(elementId);
+  }
+
+  _setGeneration(value) {
+    this.generationCounter.innerHTML = value;
+  }
+
+  _dispatch(eventName) {
+    this.game.eventListeners.dispatch(eventName);
+  }
+
+  _pause() {
+    if (this.game.isRunning) {
+      this.game.pause();
+    }
   }
 };

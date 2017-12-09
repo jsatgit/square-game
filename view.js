@@ -3,9 +3,14 @@ import Colour, {WHITE} from './colour.js';
 
 export default class View {
   constructor(squareSize) {
-    this.stage = new createjs.Stage('canvas');
+    this._initStage();
     this.previousRender = new HashMap();
     this.squareSize = squareSize;
+  }
+
+  _initStage() {
+    this.stage = new createjs.Stage('canvas');
+    this.stage.clear();
   }
 
   _drawRect(x, y, color) {
