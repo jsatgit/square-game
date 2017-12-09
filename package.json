@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/jsatgit/square-game.git",
-  "author": "James Shi <jshi@live.ca>",
+  "contributors": [  
+    "James Shi <jshi@live.ca>",
+    "Peter Hsu <peterh10201@gmail.com"
+  ],
   "license": "MIT",
   "scripts": {
-    "start" : "ws"
+    "start": "ws",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "eslint": "^4.12.0",

@@ -2,6 +2,7 @@ import Player from './player.js';
 import Game from './game.js';
 import {BLUE, RED} from './colour.js';
 import Position from './position.js';
+import UI from './ui.js';
 
 const player1 = new Player({
   colour: BLUE,
@@ -20,4 +21,5 @@ const game = new Game({
   players: [player1, player2],
 });
 
-game.start();
+const ui = new UI(game);
+

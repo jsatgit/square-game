@@ -3,10 +3,46 @@
 <head>
 	<title>Square Game</title>
 	<script src="./easeljs-0.8.2.min.js"></script>
-	<script type="module" src="./index.js"></script>
+    <script type="module" src="./index.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+  <header>
+    <h1>
+      Square Game
+    </h1> 
+  </header>
 </head>
 <body>
   <canvas id="canvas" width="500" height="500"></canvas>
+  <table id="table-stats">
+    <tr>
+      <td>
+        <button id="stop-button">
+          <i class="material-icons">stop</i>
+        </button>
+      </td>
+      <td>
+        <button id="play-button">
+        <i class="material-icons">play_arrow</i>
+        </button>
+      <td>
+        <button id="pause-button">
+          <i class="material-icons">pause</i>
+        </button>
+      </td>
+      <td>
+        <button id="step-button">
+          Step
+        </button>
+      </td>
+      <td class="text">
+        Generation:
+      </td>
+      <td id="generation-counter" class="text">
+      </td>
+    </tr>
+  </table>
 </body>
-
 </html>
