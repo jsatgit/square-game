@@ -6,48 +6,37 @@ const PAUSE_ICON = "pause";
 export default class UI { 
   constructor(game) {
     this.game = game;
-    this.playButton = this._getElement("play-button");
-    this.pauseButton = this._getElement("pause-button"); 
-    this.stepButton = this._getElement("step-button");
-    this.stopButton = this._getElement("stop-button");
-    this.generationCounter = this._getElement("generation-counter");
-    this.initUI();
+    this.playButton = getElement("play-button");
+    this.pauseButton = getElement("pause-button"); 
+    this.stepButton = getElement("step-button");
+    this.stopButton = getElement("stop-button");
+    this.generationCounter = getElement("generation-counter");
+    this._addEventListeners();
+    this._reset();
   }
 
-  initUI() {
-    this.playButton.addEventListener("click", () => {
-      this.game.start();
-    });
-
-    this.pauseButton.addEventListener("click", () => {
-      this._pause();
-    });
-
+  _addEventListeners() {
+    this.playButton.addEventListener("click", this.game.start.bind(this.game));
+    this.pauseButton.addEventListener("click", this._pause.bind(this));
     this.stepButton.addEventListener("click", () => {
       this._pause();
       this.game.tick();
     });
-
     this.stopButton.addEventListener("click", () => {
       this.game.reset();
-      this._setGeneration(this.game.generation);
+      this._reset();
     });
-    
     this.game.addEventListener(Events.NEW_GENERATION, () => {
-      this.generationCounter.innerHTML = this.game.generation;
+      this._setGeneration(this.game.generation);
     });
   }
 
-  _getElement(elementId) {
-    return document.getElementById(elementId);
+  _reset() {
+    this._setGeneration(this.game.generation);
   }
 
   _setGeneration(value) {
     this.generationCounter.innerHTML = value;
-  }
-
-  _dispatch(eventName) {
-    this.game.eventListeners.dispatch(eventName);
   }
 
   _pause() {
@@ -56,3 +45,7 @@ export default class UI {
     }
   }
 };
+
+function getElement(elementId) {
+  return document.getElementById(elementId);
+}
