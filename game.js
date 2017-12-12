@@ -18,7 +18,8 @@ export default class Game {
 
   _addArmiesToBoard() {
     this.players.forEach(player => {
-      const army = new Army(player.armySize, player);
+      player.reset();
+      const army = new Army(player.startingArmySize, player);
       this.board.addArmy(player.startingPosition, army);
     });
   }
@@ -34,6 +35,7 @@ export default class Game {
       cell.targeters.add(cell.army);
     }
     cell.army = cell.targeters.winner;
+    cell.targeters.resolve();
     cell.targeters.reset();
   }
 

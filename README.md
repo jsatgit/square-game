@@ -65,3 +65,14 @@ changed colour.
 ## Game
 
 game logic and entry point
+
+# Ideas / Future Development
+
+- [ ] cap population per cell vs dying from overcrowdedness
+- [ ] subtract army size during battles
+- [ ] regenerate army
+- [ ] randomness to fights
+- [ ] terrain / vantage points
+- [ ] lifespan
+- [ ] special units
+- [ ] experimenting with battle algorithms

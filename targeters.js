@@ -24,7 +24,15 @@ export default class Targeters {
     existingTargeter.size += targeter.size;
 
     if (existingTargeter.size > this.winner.size) {
-      this.winner = existingTargeter;
+      this.winner = existingTargeter;  
+    }
+  }
+
+  resolve() {
+    for (let [player, army] of this.targeters) {
+      if (army != this.winner) {
+        player.kill(army.size);
+      }
     }
   }
 }
