@@ -1,15 +1,38 @@
 body {    
-    background-color: #2a2a2d;
+  background-color: #2a2a2d;
 }
 
 #canvas {
-    background-color: white;
+  background-color: white;
 }
 
-h1, h2, .text {
-    color: gold;
+.title {
+  color: gold;
+  font-size: 28px;
+}
+
+.text {
+  color: gold;
+}
+
+.counter {
+  margin-left: 5px;
+}
+
+.counter-output-container {
+  display: flex;
+  color: gold;
+  margin-left: 5px;
 }
 
 button {
-    font-size:24px;
+  font-size:24px;
+}
+
+.colour-box {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  left: 5px;
+  top: 5px; 
 }
